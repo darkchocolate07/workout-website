@@ -6,4 +6,9 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from "./errorResponse";
+export * from "./exercise";
+export * from "./exerciseFilters";
+export * from "./exerciseListResponse";
 export * from "./healthStatus";
+export * from "./listExercisesParams";

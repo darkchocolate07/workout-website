@@ -8,3 +8,55 @@
 export interface HealthStatus {
   status: string;
 }
+
+export interface Exercise {
+  id: string;
+  name: string;
+  bodyPart: string;
+  equipment: string;
+  gifUrl: string;
+  target: string;
+  secondaryMuscles: string[];
+  instructions: string[];
+}
+
+export interface ExerciseListResponse {
+  exercises: Exercise[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface ExerciseFilters {
+  bodyParts: string[];
+  equipment: string[];
+}
+
+export interface ErrorResponse {
+  error: string;
+  message: string;
+}
+
+export type ListExercisesParams = {
+  /**
+   * Search term to filter exercises by name
+   */
+  search?: string;
+  /**
+   * Filter by body part/muscle group
+   */
+  bodyPart?: string;
+  /**
+   * Filter by equipment type
+   */
+  equipment?: string;
+  /**
+   * Page number (1-based)
+   */
+  page?: number;
+  /**
+   * Items per page
+   */
+  limit?: number;
+};

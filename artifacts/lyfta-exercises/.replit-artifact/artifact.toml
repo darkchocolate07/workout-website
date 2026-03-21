@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Lyfta Exercise Library"
+version = "1.0.0"
+id = "artifacts/lyfta-exercises"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21303
+
+[services.development]
+run = "pnpm --filter @workspace/lyfta-exercises run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/lyfta-exercises", "run", "build" ]
+publicDir = "artifacts/lyfta-exercises/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21303"
+BASE_PATH = "/"
