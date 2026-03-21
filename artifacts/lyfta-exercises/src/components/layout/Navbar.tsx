@@ -20,7 +20,7 @@ export function Navbar({ onAddClick }: NavbarProps) {
             <Dumbbell className="w-5 h-5 text-white" />
           </div>
           <span className="font-display font-bold text-2xl tracking-tight">
-            Lyfta<span className="text-primary">.</span>
+            Krish Workout<span className="text-primary">.</span>
           </span>
         </Link>
         
