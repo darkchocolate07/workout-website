@@ -18,6 +18,8 @@ export interface Exercise {
   target: string;
   secondaryMuscles: string[];
   instructions: string[];
+  images: string[];
+  level: string;
 }
 
 export interface ExerciseListResponse {

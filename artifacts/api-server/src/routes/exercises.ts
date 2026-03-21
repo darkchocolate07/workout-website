@@ -88,6 +88,8 @@ router.get("/", async (req, res) => {
         target: e.target,
         secondaryMuscles: e.secondaryMuscles ?? [],
         instructions: e.instructions ?? [],
+        images: e.images ?? [],
+        level: e.level ?? "beginner",
       })),
       total,
       page: page ?? 1,
@@ -131,6 +133,8 @@ router.get("/:id", async (req, res) => {
       target: e.target,
       secondaryMuscles: e.secondaryMuscles ?? [],
       instructions: e.instructions ?? [],
+      images: e.images ?? [],
+      level: e.level ?? "beginner",
     });
 
     res.json(data);

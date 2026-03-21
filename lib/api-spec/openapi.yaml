@@ -135,6 +135,12 @@ components:
           type: array
           items:
             type: string
+        images:
+          type: array
+          items:
+            type: string
+        level:
+          type: string
       required:
         - id
         - name
@@ -144,6 +150,8 @@ components:
         - target
         - secondaryMuscles
         - instructions
+        - images
+        - level
     ExerciseListResponse:
       type: object
       properties:

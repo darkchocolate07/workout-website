@@ -56,6 +56,8 @@ export const ListExercisesResponse = zod.object({
       target: zod.string(),
       secondaryMuscles: zod.array(zod.string()),
       instructions: zod.array(zod.string()),
+      images: zod.array(zod.string()),
+      level: zod.string(),
     }),
   ),
   total: zod.number(),
@@ -80,6 +82,8 @@ export const GetExerciseResponse = zod.object({
   target: zod.string(),
   secondaryMuscles: zod.array(zod.string()),
   instructions: zod.array(zod.string()),
+  images: zod.array(zod.string()),
+  level: zod.string(),
 });
 
 /**
