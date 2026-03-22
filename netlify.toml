@@ -1,0 +1,18 @@
+# Netlify hosts the Vite SPA only. Deploy the Express API separately (Render, Railway,
+# Fly.io, etc.) and set VITE_API_BASE_URL to that API’s origin (no trailing slash).
+
+[build]
+  command = "corepack enable && corepack prepare pnpm@9 --activate && pnpm install && pnpm --filter @workspace/lyfta-exercises run build"
+  publish = "artifacts/lyfta-exercises/dist/public"
+
+[build.environment]
+  NODE_VERSION = "22"
+  # Required by artifacts/lyfta-exercises/vite.config.ts at config load time
+  PORT = "1"
+  BASE_PATH = "/"
+
+# Single-page app: client-side routes fall back to index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
