@@ -12,9 +12,10 @@ services:
     plan: free
     branch: master
     # Free tier: preDeployCommand is not allowed — run schema push in build (DATABASE_URL is injected when DB is linked).
+    # NODE_ENV=production skips devDependencies; esbuild + drizzle-kit are devDeps — install with NODE_ENV=development first.
     buildCommand: >-
       corepack enable && corepack prepare pnpm@9 --activate &&
-      pnpm install &&
+      NODE_ENV=development pnpm install &&
       pnpm --filter @workspace/api-server run build &&
       pnpm --filter @workspace/db run push
     startCommand: node --enable-source-maps artifacts/api-server/dist/index.mjs
