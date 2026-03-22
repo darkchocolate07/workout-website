@@ -1,4 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/context/auth-context";
+import { isUnauthorized } from "@/lib/auth-helpers";
 import { getAuthBearerHeaders } from "@/lib/auth-token";
 import { resolveApiPath } from "@/lib/api-url";
 
@@ -233,17 +235,26 @@ export function useDeletePlanItem() {
   });
 }
 
+export type RagChatTurn = { role: "user" | "assistant"; content: string };
+
 export function useRagQuery() {
+  const { logout } = useAuth();
   return useMutation({
-    mutationFn: async (question: string) => {
+    mutationFn: async (payload: {
+      question: string;
+      conversation?: RagChatTurn[];
+    }) => {
       const res = await fetch(resolveApiPath("/api/rag/query"), {
         method: "POST",
         headers: {
           "content-type": "application/json",
           ...getAuthBearerHeaders(),
         },
-        body: JSON.stringify({ question }),
+        body: JSON.stringify(payload),
       });
+      if (isUnauthorized(res, logout)) {
+        throw new Error("Session expired. Please log in again.");
+      }
       if (!res.ok) {
         const err = await parseJson<{ message?: string }>(res);
         throw new Error(err.message ?? "Query failed");
@@ -256,6 +267,7 @@ export function useRagQuery() {
           id: string;
           label: string;
           detail: string;
+          urls?: string[];
         }>;
         disclaimer: string;
       }>(res);

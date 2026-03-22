@@ -12,7 +12,25 @@ export type RagSource = {
   id: string;
   label: string;
   detail: string;
+  /** Illustration URLs from the exercise row (gif + stills), when present. */
+  urls?: string[];
 };
+
+/** Deduped media URLs stored for an exercise (gif first, then still images). */
+export function exerciseMediaUrls(
+  e: typeof exercisesTable.$inferSelect,
+): string[] {
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const u of [e.gifUrl, ...e.images]) {
+    const s = typeof u === "string" ? u.trim() : "";
+    if (s && !seen.has(s)) {
+      seen.add(s);
+      out.push(s);
+    }
+  }
+  return out;
+}
 
 function tokenizeQuestion(q: string): string[] {
   const terms = q
@@ -23,6 +41,24 @@ function tokenizeQuestion(q: string): string[] {
   if (terms.length > 0) return terms;
   const t = q.trim().toLowerCase();
   return t ? [t] : [];
+}
+
+/** Merge recent user turns with the latest question so short follow-ups still retrieve well ("what about legs?"). */
+export type RagChatTurn = { role: "user" | "assistant"; content: string };
+
+export function mergeQuestionForRetrieval(
+  question: string,
+  conversation: RagChatTurn[] | undefined,
+): string {
+  const q = question.trim();
+  if (!conversation?.length) return q;
+  const userMsgs = conversation
+    .filter((m) => m.role === "user")
+    .slice(-4)
+    .map((m) => m.content.trim())
+    .filter(Boolean);
+  const merged = [...userMsgs, q].join(" ");
+  return merged.slice(0, 3000);
 }
 
 export async function retrieveGroundedContext(userId: string, question: string) {
@@ -129,8 +165,11 @@ export type RagContext = Awaited<ReturnType<typeof retrieveGroundedContext>>;
 export function formatContextPackForLlm(ctx: RagContext): string {
   const lines: string[] = [];
   for (const e of ctx.exercises) {
+    const media = exerciseMediaUrls(e);
+    const mediaPart =
+      media.length > 0 ? ` | media_urls=${media.join(" ; ")}` : "";
     lines.push(
-      `[EXERCISE] id=${e.id} | name=${e.name} | bodyPart=${e.bodyPart} | equipment=${e.equipment} | target=${e.target}`,
+      `[EXERCISE] id=${e.id} | name=${e.name} | bodyPart=${e.bodyPart} | equipment=${e.equipment} | target=${e.target}${mediaPart}`,
     );
   }
   for (const { log, exerciseName } of ctx.logs) {
@@ -164,11 +203,13 @@ export function buildGroundedAnswer(
   const sources: RagSource[] = [];
 
   for (const e of ctx.exercises) {
+    const urls = exerciseMediaUrls(e);
     sources.push({
       kind: "exercise",
       id: e.id,
       label: e.name,
       detail: `${e.bodyPart} · ${e.equipment} · target: ${e.target}`,
+      ...(urls.length > 0 ? { urls } : {}),
     });
   }
 
@@ -223,8 +264,13 @@ export function buildGroundedAnswer(
   if (ctx.exercises.length > 0) {
     lines.push("**From the exercise library**");
     for (const e of ctx.exercises.slice(0, 10)) {
+      const media = exerciseMediaUrls(e);
+      const urlBit =
+        media.length > 0
+          ? ` — image URLs: ${media.slice(0, 4).join(" | ")}${media.length > 4 ? ` (+${media.length - 4} more)` : ""}`
+          : "";
       lines.push(
-        `- ${e.name} (${e.bodyPart}, ${e.equipment}) — target: ${e.target}`,
+        `- ${e.name} (${e.bodyPart}, ${e.equipment}) — target: ${e.target}${urlBit}`,
       );
     }
     if (ctx.exercises.length > 10) {
