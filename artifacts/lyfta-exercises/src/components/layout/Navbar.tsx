@@ -1,12 +1,8 @@
-import { Search, Plus, Dumbbell } from "lucide-react";
+import { Dumbbell } from "lucide-react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 
-interface NavbarProps {
-  onAddClick: () => void;
-}
-
-export function Navbar({ onAddClick }: NavbarProps) {
+export function Navbar() {
   return (
     <motion.header 
       initial={{ y: -100 }}
@@ -25,14 +21,6 @@ export function Navbar({ onAddClick }: NavbarProps) {
         </Link>
         
         <div className="flex items-center gap-4">
-          <button 
-            onClick={onAddClick}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-full bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all active:scale-95"
-          >
-            <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">Add Custom</span>
-          </button>
-          
           <div className="w-10 h-10 rounded-full bg-secondary border border-white/10 overflow-hidden">
             <img 
               src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=100&h=100&fit=crop" 

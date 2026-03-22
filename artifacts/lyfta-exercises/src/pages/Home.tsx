@@ -58,11 +58,6 @@ export default function Home() {
     setFormModalOpen(true);
   };
 
-  const handleCreate = () => {
-    setExerciseToEdit(null);
-    setFormModalOpen(true);
-  };
-
   return (
     <div className="min-h-screen flex flex-col relative">
       {/* Background Decor */}
@@ -76,7 +71,7 @@ export default function Home() {
       </div>
 
       <div className="relative z-10 flex flex-col flex-1">
-        <Navbar onAddClick={handleCreate} />
+        <Navbar />
         
         <Filters 
           search={search} setSearch={(v) => { setSearch(v); setPage(1); }}
