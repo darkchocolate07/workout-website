@@ -1,11 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { 
+import {
   useListExercises as useGeneratedListExercises,
   useGetExercise as useGeneratedGetExercise,
   useGetExerciseFilters as useGeneratedGetExerciseFilters,
   type ListExercisesParams,
-  type Exercise
+  type Exercise,
 } from "@workspace/api-client-react";
+import { getAuthBearerHeaders } from "@/lib/auth-token";
+import { resolveApiPath } from "@/lib/api-url";
 
 // Re-export generated queries for clean imports in components
 export const useListExercises = useGeneratedListExercises;
@@ -26,9 +28,12 @@ export function useCreateExercise() {
   
   return useMutation({
     mutationFn: async (data: CreateExerciseInput) => {
-      const res = await fetch("/api/exercises", {
+      const res = await fetch(resolveApiPath("/api/exercises"), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthBearerHeaders(),
+        },
         body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error("Failed to create exercise (Expected if backend endpoint is missing)");
@@ -45,9 +50,12 @@ export function useUpdateExercise() {
   
   return useMutation({
     mutationFn: async ({ id, ...data }: Partial<CreateExerciseInput> & { id: string }) => {
-      const res = await fetch(`/api/exercises/${id}`, {
+      const res = await fetch(resolveApiPath(`/api/exercises/${id}`), {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthBearerHeaders(),
+        },
         body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error("Failed to update exercise");
@@ -65,8 +73,9 @@ export function useDeleteExercise() {
   
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(`/api/exercises/${id}`, {
+      const res = await fetch(resolveApiPath(`/api/exercises/${id}`), {
         method: "DELETE",
+        headers: { ...getAuthBearerHeaders() },
       });
       if (!res.ok) throw new Error("Failed to delete exercise");
       return true;

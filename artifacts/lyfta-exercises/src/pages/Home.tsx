@@ -6,7 +6,7 @@ import { ExerciseDetailModal } from "@/components/exercises/ExerciseDetailModal"
 import { ExerciseFormModal } from "@/components/exercises/ExerciseFormModal";
 import { useListExercises, useGetExerciseFilters } from "@/hooks/use-exercises";
 import { useDebounce } from "@/hooks/use-debounce"; // Will implement inline
-import { Loader2, ChevronLeft, ChevronRight, Activity } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight, Activity, Dumbbell } from "lucide-react";
 import type { Exercise } from "@workspace/api-client-react";
 import { motion } from "framer-motion";
 

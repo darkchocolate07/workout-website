@@ -47,3 +47,7 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# Local secrets (API keys, JWT, etc.) — never commit
+**/.env
+.env
