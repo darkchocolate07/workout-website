@@ -1,6 +1,11 @@
-import { db } from "@workspace/db";
+import { db, pool } from "@workspace/db";
 import { exercisesTable } from "@workspace/db/schema";
-import { readFileSync } from "fs";
+import { existsSync, readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
+/** Bundled array from upstream: https://github.com/yuhonas/free-exercise-db */
+const DEFAULT_EXERCISES_JSON_URL =
+  "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/dist/exercises.json";
 
 const IMAGE_BASE = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises";
 
@@ -56,9 +61,33 @@ interface RawExercise {
   mechanic: string | null;
 }
 
+async function loadRawExercises(): Promise<RawExercise[]> {
+  const fromEnvPath = process.env.EXERCISES_JSON_PATH?.trim();
+  if (fromEnvPath) {
+    const raw = readFileSync(fromEnvPath, "utf-8");
+    return JSON.parse(raw) as RawExercise[];
+  }
+
+  const fromRepo = fileURLToPath(
+    new URL("../../data/exercises.json", import.meta.url),
+  );
+  if (existsSync(fromRepo)) {
+    const raw = readFileSync(fromRepo, "utf-8");
+    console.log(`Loaded exercises from ${fromRepo}`);
+    return JSON.parse(raw) as RawExercise[];
+  }
+
+  const url = process.env.EXERCISES_JSON_URL?.trim() || DEFAULT_EXERCISES_JSON_URL;
+  console.log(`Fetching exercises from ${url} …`);
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch exercises (${res.status}): ${url}`);
+  }
+  return (await res.json()) as RawExercise[];
+}
+
 async function seed() {
-  const rawData = readFileSync("/tmp/exercises.json", "utf-8");
-  const rawExercises: RawExercise[] = JSON.parse(rawData);
+  const rawExercises = await loadRawExercises();
 
   console.log(`Processing ${rawExercises.length} exercises...`);
 
@@ -109,4 +138,11 @@ async function seed() {
   console.log("✅ Done! All exercises seeded with real images.");
 }
 
-seed().catch(console.error).finally(() => process.exit(0));
+seed()
+  .catch((e) => {
+    console.error(e);
+    process.exitCode = 1;
+  })
+  .finally(() => {
+    void pool.end().finally(() => process.exit(process.exitCode ?? 0));
+  });
