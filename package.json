@@ -8,6 +8,7 @@
     "dev:api": "PORT=8080 pnpm --filter @workspace/api-server run dev",
     "dev:mockup": "PORT=8081 BASE_PATH=/__mockup pnpm --filter @workspace/mockup-sandbox run dev",
     "db:push": "pnpm --filter @workspace/db run push",
+    "push:github": "bash scripts/push-to-github.sh",
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
