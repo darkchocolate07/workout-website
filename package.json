@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "preinstall": "sh -c 'rm -f package-lock.json yarn.lock; case \"$npm_config_user_agent\" in pnpm/*) ;; *) echo \"Use pnpm instead\" >&2; exit 1 ;; esac'",
+    "dev": "bash scripts/dev-stack.sh",
     "dev:lyfta": "PORT=21303 BASE_PATH=/ pnpm --filter @workspace/lyfta-exercises run dev",
     "dev:api": "PORT=8080 pnpm --filter @workspace/api-server run dev",
     "dev:mockup": "PORT=8081 BASE_PATH=/__mockup pnpm --filter @workspace/mockup-sandbox run dev",
